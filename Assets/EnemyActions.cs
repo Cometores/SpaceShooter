@@ -7,11 +7,18 @@ public class EnemyActions : MonoBehaviour
     Rigidbody2D rb;
     [SerializeField] float speed = 5f;
     float movementDirection = 1;
-    int life = 3;
+    int life = 1;
     [SerializeField] GameObject bullet;
     [SerializeField] GameObject explosion;
 
-    private void Awake() => rb = GetComponent<Rigidbody2D>();
+    AudioSource auSource;
+    [SerializeField] AudioClip hitClip;
+
+    private void Awake()
+    {
+        auSource = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     void Start()
     {
@@ -33,6 +40,7 @@ public class EnemyActions : MonoBehaviour
     {
         if (collision.CompareTag("Bullet"))
         {
+            auSource.PlayOneShot(hitClip);
             Destroy(collision.gameObject);
             life -= 1;
         }

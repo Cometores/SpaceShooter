@@ -7,7 +7,14 @@ public class PlayerActionsScript : MonoBehaviour
     public PlayerInputActions playerControls;
     InputAction move;
     InputAction fire;
-    [SerializeField] GameObject bullet; 
+    [SerializeField] GameObject bullet;
+
+    AudioSource auSource;
+    [SerializeField] AudioClip shootClip;
+    [SerializeField] AudioClip explosionClip;
+    SpriteRenderer sr;
+
+    [SerializeField] GameObject explosion;
 
     [SerializeField] float moveSpeed = 5f;
     Rigidbody2D rb;
@@ -16,6 +23,8 @@ public class PlayerActionsScript : MonoBehaviour
 
     private void Awake()
     {
+        sr = GetComponent<SpriteRenderer>();
+        auSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
         playerControls = new PlayerInputActions();
     }
@@ -54,7 +63,11 @@ public class PlayerActionsScript : MonoBehaviour
     void Fire(InputAction.CallbackContext context)
     {
         if (!isFail)
+        {
             Instantiate(bullet, transform.position, Quaternion.Euler(0, 0, 90));
+            auSource.PlayOneShot(shootClip);
+        }
+            
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -62,6 +75,9 @@ public class PlayerActionsScript : MonoBehaviour
         if (collision.CompareTag("EnemyBullet"))
         {
             isFail = true;
+            sr.enabled = false;
+            Instantiate(explosion, transform.position, Quaternion.identity);
+            auSource.PlayOneShot(explosionClip);
             Invoke(nameof(restartGame), 1.2f);
         }
     }
